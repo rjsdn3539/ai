@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* ── Primary ── 따뜻한 바이올렛 */
+  --primary: #7c6af0;
+  --primary-hover: #6b58e4;
+  --primary-light: #f4f2fd;
+  --primary-border: #d4cdf7;
+
+  /* ── Accent ── 스카이 블루 */
+  --accent: #0ea5e9;
+  --accent-hover: #0284c7;
+  --accent-light: #e0f6ff;
+  --accent-border: #b3e8fb;
+
+  /* ── Semantic ── */
+  --success: #2da65e;
+  --warning: #e09420;
+  --danger: #e05252;
+
+  /* ── Surfaces ── 따뜻한 크림 */
+  --surface: #ffffff;
+  --bg: #f8f5f1;
+  --bg-warm: #f3efe8;
+
+  /* ── Sidebar ── 따뜻한 다크 차콜 */
+  --sidebar-bg: #1e1b17;
+
+  /* ── Borders ── 따뜻한 베이지 */
+  --border: #e9e4db;
+  --border-light: #f2ede6;
+
+  /* ── Text ── 따뜻한 스톤 */
+  --text: #1e1b17;
+  --text-secondary: #7c7068;
+  --text-muted: #b3a99e;
+
+  /* ── Shadows ── 따뜻한 틴트 */
+  --shadow-sm: 0 1px 4px rgba(30,27,23,0.07), 0 1px 2px rgba(30,27,23,0.04);
+  --shadow: 0 4px 16px rgba(30,27,23,0.08);
+  --shadow-md: 0 8px 28px rgba(30,27,23,0.10);
+  --shadow-lg: 0 20px 56px rgba(30,27,23,0.13);
+
+  /* ── Radii ── 더 둥글게 */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+
+  --sidebar-w: 252px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { min-height: 100vh; }
+a { text-decoration: none; color: inherit; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4ccc2; border-radius: 99px; }
+
+/* ── Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(224,82,82,0.4); }
+  50%      { box-shadow: 0 0 0 12px rgba(224,82,82,0); }
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.page-anim { animation: fadeIn 0.25s ease both; }
+
+/* ── Card hover lift ── */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ── Gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Shimmer skeleton ── */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #f2ede6 25%, #ede8e0 50%, #f2ede6 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite;
+}
