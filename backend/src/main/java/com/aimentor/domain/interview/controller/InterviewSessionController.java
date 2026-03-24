@@ -9,6 +9,7 @@ import com.aimentor.domain.interview.dto.response.InterviewResultReportResponse;
 import com.aimentor.domain.interview.dto.response.InterviewSessionResponse;
 import com.aimentor.domain.interview.service.InterviewSessionService;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,12 @@ public class InterviewSessionController {
 
     public InterviewSessionController(InterviewSessionService interviewSessionService) {
         this.interviewSessionService = interviewSessionService;
+    }
+
+    @GetMapping
+    public ApiResponse<List<InterviewSessionResponse>> getSessions(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        return ApiResponse.success(interviewSessionService.getSessions(authenticatedUser.userId()));
     }
 
     @PostMapping

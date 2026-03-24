@@ -35,6 +35,7 @@ import com.aimentor.external.ai.dto.AiGenerateInterviewQuestionsResponse;
 import com.aimentor.external.ai.dto.AiGenerateReportSummaryRequest;
 import com.aimentor.external.ai.dto.AiGenerateReportSummaryResponse;
 import com.aimentor.external.ai.dto.AiQuestionItem;
+import com.aimentor.external.ai.dto.AiReportQaItem;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InterviewSessionService {
 
     private static final Logger log = LoggerFactory.getLogger(InterviewSessionService.class);
-    private static final int DEFAULT_QUESTION_COUNT = 3;
+    private static final int DEFAULT_QUESTION_COUNT = 5;
 
     private final InterviewSessionRepository interviewSessionRepository;
     private final InterviewQuestionRepository interviewQuestionRepository;
@@ -126,6 +127,13 @@ public class InterviewSessionService {
         }
 
         return toSessionResponse(savedSession);
+    }
+
+    public List<InterviewSessionResponse> getSessions(Long userId) {
+        return interviewSessionRepository.findByUserIdOrderByStartedAtDesc(userId)
+                .stream()
+                .map(this::toSessionResponse)
+                .toList();
     }
 
     public InterviewSessionResponse getSessionDetail(Long userId, Long sessionId) {
@@ -214,7 +222,19 @@ public class InterviewSessionService {
         int specificityScore = average(feedbackItems.stream().mapToInt(AiAnalyzeAnswerFeedbackResponse::specificityScore).toArray());
         int overallScore = average(feedbackItems.stream().mapToInt(AiAnalyzeAnswerFeedbackResponse::overallScore).toArray());
 
-        AiGenerateReportSummaryResponse reportSummary = safelyGenerateReportSummary(interviewSession, feedbackItems);
+        List<AiReportQaItem> qaItems = new ArrayList<>();
+        for (int i = 0; i < answeredQuestions.size(); i++) {
+            InterviewQuestion q = answeredQuestions.get(i);
+            AiAnalyzeAnswerFeedbackResponse f = feedbackItems.get(i);
+            qaItems.add(new AiReportQaItem(
+                    q.getQuestionText(),
+                    q.getAnswer().getAnswerText(),
+                    f.relevanceScore(), f.logicScore(), f.specificityScore(), f.overallScore(),
+                    f.feedbackSummary()
+            ));
+        }
+
+        AiGenerateReportSummaryResponse reportSummary = safelyGenerateReportSummary(interviewSession, qaItems);
         replaceSessionFeedback(interviewSession, relevanceScore, logicScore, specificityScore, overallScore,
                 reportSummary.weakPoints(), reportSummary.improvements(), reportSummary.recommendedAnswer());
     }
@@ -311,7 +331,7 @@ public class InterviewSessionService {
 
     private AiGenerateReportSummaryResponse safelyGenerateReportSummary(
             InterviewSession interviewSession,
-            List<AiAnalyzeAnswerFeedbackResponse> feedbackItems
+            List<AiReportQaItem> feedbackItems
     ) {
         try {
             AiGenerateReportSummaryResponse response = aiIntegrationService.generateReportSummary(
